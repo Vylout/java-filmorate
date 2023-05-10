@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 @Data
