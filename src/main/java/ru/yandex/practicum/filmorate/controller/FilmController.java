@@ -24,7 +24,7 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
-        if (film.getName().isBlank()){
+        if (film.getName().isBlank()) {
             log.warn("Не указана название фильма");
             throw new ValidationException("Не указана название фильма");
         }
@@ -32,8 +32,8 @@ public class FilmController {
             log.warn("Максимальная длина описания - 200 символов");
             throw new ValidationException("Максимальная длина описания - 200 символов");
         }
-        LocalDate date = LocalDate.of(1895, 12,28);
-        if (film.getReleaseDate().isBefore(date)){
+        LocalDate date = LocalDate.of(1895, 12, 28);
+        if (film.getReleaseDate().isBefore(date)) {
             log.warn("Дата релиза — не раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
         }
@@ -48,14 +48,14 @@ public class FilmController {
 
     @PutMapping
     public Film updateUser(@RequestBody Film film) {
-        if (!films.containsKey(film.getId())){
+        if (!films.containsKey(film.getId())) {
             throw new ValidationException("Фильма с таким ID нет");
         }
         films.put(film.getId(), film);
         return film;
     }
 
-    private int generatorId(){
+    private int generatorId() {
         return ++idGenerator;
     }
 }

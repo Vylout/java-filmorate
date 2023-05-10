@@ -20,7 +20,7 @@ class FilmControllerTest {
     private Film film;
 
     @BeforeEach
-    public void create(){
+    public void create() {
         film = new Film(0, "name", "description", LocalDate.of(2015, 6, 15), 100);
     }
 
@@ -40,7 +40,7 @@ class FilmControllerTest {
 
     @Test
     public void checkingLocalDate() {
-        film.setReleaseDate(LocalDate.of(1894, 12,28));
+        film.setReleaseDate(LocalDate.of(1894, 12, 28));
         ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
         Assertions.assertEquals("Дата релиза — не раньше 28 декабря 1895 года", e.getMessage());
     }

@@ -20,7 +20,7 @@ class UserControllerTest {
     private User user;
 
     @BeforeEach
-    public void create(){
+    public void create() {
         user = new User(0, "email@mail.ru", "login", "name", LocalDate.of(1986, 3, 21));
     }
 

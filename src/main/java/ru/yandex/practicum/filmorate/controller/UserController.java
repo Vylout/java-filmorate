@@ -29,17 +29,17 @@ public class UserController {
             throw new ValidationException("Указан некорректный логин " + user.getLogin() + ".");
         }
 
-        if(user.getEmail().isBlank() || !user.getEmail().contains("@")){
+        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
             log.warn("Некорректный адрес электронной почты {}.", user.getEmail());
             throw new ValidationException("Некорректный адрес электронной почты " + user.getEmail() + ".");
         }
 
-        if(user.getName() == null){
+        if (user.getName() == null) {
             log.warn("Имя указано пустым. Имени было присвоено значение логина {}.", user.getLogin());
             user.setName(user.getLogin());
         }
 
-        if (user.getBirthday().isAfter(LocalDate.now())){
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             log.warn("Неверная дата рождения {}", user.getBirthday());
             throw new ValidationException("Указана не верная дата рождения " + user.getBirthday() + ".");
         }
@@ -50,15 +50,15 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user){
-        if (!users.containsKey(user.getId())){
+    public User updateUser(@RequestBody User user) {
+        if (!users.containsKey(user.getId())) {
             throw new ValidationException("Пользователь с таким ID нет");
         }
         users.put(user.getId(), user);
         return user;
     }
 
-    private int generatorId(){
+    private int generatorId() {
         return ++idGenerator;
     }
 }
