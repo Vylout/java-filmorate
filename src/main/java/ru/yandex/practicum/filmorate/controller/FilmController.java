@@ -25,21 +25,21 @@ public class FilmController {
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
         if (film.getName().isBlank()) {
-            log.warn("Не указана название фильма");
-            throw new ValidationException("Не указана название фильма");
+            log.warn("Не указана название фильма.");
+            throw new ValidationException("Не указана название фильма.");
         }
         if (film.getDescription().length() > 200) {
-            log.warn("Максимальная длина описания - 200 символов");
-            throw new ValidationException("Максимальная длина описания - 200 символов");
+            log.warn("Максимальная длина описания - 200 символов.");
+            throw new ValidationException("Максимальная длина описания - 200 символов.");
         }
         LocalDate date = LocalDate.of(1895, 12, 28);
         if (film.getReleaseDate().isBefore(date)) {
-            log.warn("Дата релиза — не раньше 28 декабря 1895 года");
-            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+            log.warn("Дата релиза — не раньше 28 декабря 1895 года.");
+            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года.");
         }
         if (film.getDuration() < 0) {
-            log.warn("Продолжительность фильма должна быть положительной");
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
+            log.warn("Продолжительность фильма должна быть положительной.");
+            throw new ValidationException("Продолжительность фильма должна быть положительной.");
         }
         film.setId(generatorId());
         films.put(film.getId(), film);
