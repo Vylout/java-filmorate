@@ -28,27 +28,27 @@ class FilmControllerTest {
     public void checkingMane() {
         film.setName(" ");
         ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Не указана название фильма", e.getMessage());
+        Assertions.assertEquals("Не указана название фильма.", e.getMessage());
     }
 
     @Test
     public void checkingDescription() {
         film.setDescription("s".repeat(201));
         ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Максимальная длина описания - 200 символов", e.getMessage());
+        Assertions.assertEquals("Максимальная длина описания - 200 символов.", e.getMessage());
     }
 
     @Test
     public void checkingLocalDate() {
         film.setReleaseDate(LocalDate.of(1894, 12, 28));
         ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Дата релиза — не раньше 28 декабря 1895 года", e.getMessage());
+        Assertions.assertEquals("Дата релиза — не раньше 28 декабря 1895 года.", e.getMessage());
     }
 
     @Test
     public void checkingDuration() {
         film.setDuration(-2);
         ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-        Assertions.assertEquals("Продолжительность фильма должна быть положительной", e.getMessage());
+        Assertions.assertEquals("Продолжительность фильма должна быть положительной.", e.getMessage());
     }
 }
