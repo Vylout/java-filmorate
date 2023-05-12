@@ -1,10 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,15 +27,10 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
             log.warn("Указан некорректный логин {}.", user.getLogin());
             throw new ValidationException("Указан некорректный логин " + user.getLogin() + ".");
-        }
-
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.warn("Некорректный адрес электронной почты {}.", user.getEmail());
-            throw new ValidationException("Некорректный адрес электронной почты " + user.getEmail() + ".");
         }
 
         if (user.getName() == null) {
@@ -46,6 +45,7 @@ public class UserController {
 
         user.setId(generatorId());
         users.put(user.getId(), user);
+        log.warn("Новый User зарегистрирован.");
         return user;
     }
 
@@ -60,5 +60,19 @@ public class UserController {
 
     private int generatorId() {
         return ++idGenerator;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+            log.warn(errorMessage);
+        });
+        return errors;
     }
 }

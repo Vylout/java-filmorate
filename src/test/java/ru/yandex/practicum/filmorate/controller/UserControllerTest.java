@@ -5,10 +5,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +40,32 @@ class UserControllerTest {
 
     @Test
     public void checkingEmail() {
+        user.setEmail("");
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Object>> result = validator.validate(user);
+        assertEquals(1, result.size());
+
+        List<String> validationErrors = new ArrayList<>();
+        result.forEach(e -> validationErrors.add(e.getMessage()));
+
+        assertTrue(validationErrors.contains("Email не может быть пустым."));
+    }
+
+    @Test
+    public void checkingEmail2() {
         user.setEmail("emailmail.ru");
-        ValidationException e = assertThrows(ValidationException.class, () -> userController.createUser(user));
-        Assertions.assertEquals("Некорректный адрес электронной почты emailmail.ru.", e.getMessage());
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Object>> result = validator.validate(user);
+        assertEquals(1, result.size());
+
+        List<String> validationErrors = new ArrayList<>();
+        result.forEach(e -> validationErrors.add(e.getMessage()));
+
+        assertTrue(validationErrors.contains("Некорректный адрес электронной почты."));
     }
 
     @Test

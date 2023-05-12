@@ -1,10 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,24 +27,13 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film createFilm(@RequestBody Film film) {
-        if (film.getName().isBlank()) {
-            log.warn("Не указана название фильма.");
-            throw new ValidationException("Не указана название фильма.");
-        }
-        if (film.getDescription().length() > 200) {
-            log.warn("Максимальная длина описания - 200 символов.");
-            throw new ValidationException("Максимальная длина описания - 200 символов.");
-        }
+    public Film createFilm(@Valid @RequestBody Film film) {
         LocalDate date = LocalDate.of(1895, 12, 28);
         if (film.getReleaseDate().isBefore(date)) {
             log.warn("Дата релиза — не раньше 28 декабря 1895 года.");
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года.");
         }
-        if (film.getDuration() < 0) {
-            log.warn("Продолжительность фильма должна быть положительной.");
-            throw new ValidationException("Продолжительность фильма должна быть положительной.");
-        }
+
         film.setId(generatorId());
         films.put(film.getId(), film);
         return film;
@@ -57,5 +50,19 @@ public class FilmController {
 
     private int generatorId() {
         return ++idGenerator;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+            log.warn(errorMessage);
+        });
+        return errors;
     }
 }
