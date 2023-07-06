@@ -15,6 +15,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ class FilmControllerTest {
 
     @BeforeEach
     public void create() {
-        film = new Film(0, "name", "description", LocalDate.of(2015, 6, 15), 100);
+        film = new Film(0, "name", "description", LocalDate.of(2015, 6, 15), 100, new HashSet<>());
     }
 
     @Test
@@ -64,7 +65,7 @@ class FilmControllerTest {
     @Test
     public void checkingLocalDate() {
         film.setReleaseDate(LocalDate.of(1894, 12, 28));
-        ValidationException e = assertThrows(ValidationException.class, () -> filmController.createFilm(film));
+        ValidationException e = assertThrows(ValidationException.class, () -> filmController.addFilm(film));
         Assertions.assertEquals("Дата релиза — не раньше 28 декабря 1895 года.", e.getMessage());
     }
 
