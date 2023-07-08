@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserId(@PathVariable Long id) {
+    public User getUserId(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
@@ -40,27 +40,27 @@ public class UserController {
     }
 
     @DeleteMapping("/id")
-    public Long removeUser(@PathVariable Long id) {
+    public Integer removeUser(@PathVariable Integer id) {
         return userService.removeUser(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+    public User addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public Long removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+    public Integer removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.removeFriends(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> getUserFriends(@PathVariable Long id) {
+    public Collection<User> getUserFriends(@PathVariable Integer id) {
         return userService.getUserFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{friendId}")
-    public Collection<User> getFriendFriends(@PathVariable Long id, @PathVariable Long friendId) {
+    public Collection<User> getFriendFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         return userService.getMutualFriends(id, friendId);
     }
 }

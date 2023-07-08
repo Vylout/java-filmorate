@@ -9,8 +9,8 @@ import java.util.*;
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Long, User> users = new HashMap<>();
-    private long id = 1;
+    private final Map<Integer, User> users = new HashMap<>();
+    private int id = 1;
 
     @Override
     public User addUser(User user) {
@@ -21,12 +21,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Map<Long, User> getAllUsers() {
+    public Map<Integer, User> getAllUsers() {
         return users;
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(Integer id) {
         return users.get(id);
     }
 
@@ -38,14 +38,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Long removeUser(Long id) {
+    public Integer removeUser(Integer id) {
         users.remove(id);
         log.warn("Пользователь с ID {} удален.", id);
         return id;
     }
 
     @Override
-    public User addFriends(Long id, Long friendId) {
+    public User addFriends(Integer id, Integer friendId) {
         users.get(id).getFriends().add(friendId);
         users.get(friendId).getFriends().add(id);
         log.warn("Пользователи  {} и {} добавлены в друзья.", id, friendId);
@@ -53,20 +53,20 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getUserFriends(Long id) {
+    public Collection<User> getUserFriends(Integer id) {
         List<User> friends = new ArrayList<>();
-        Set<Long> setFriends = users.get(id).getFriends();
-        for (Long friend : setFriends) {
+        Set<Integer> setFriends = users.get(id).getFriends();
+        for (Integer friend : setFriends) {
             friends.add(users.get(friend));
         }
         return friends;
     }
 
     @Override
-    public Collection<User> getMutualFriends(Long id1, Long id2) {
+    public Collection<User> getMutualFriends(Integer id1, Integer id2) {
         log.warn("Список общих друзей {} и {} составляется", id1, id2);
         Collection<User> friends = new HashSet<>();
-        for (Long id : users.get(id1).getFriends()) {
+        for (Integer id : users.get(id1).getFriends()) {
             if (users.get(id2).getFriends().contains(id)) {
                 friends.add(users.get(id));
             }
@@ -76,14 +76,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Long removeFriends(Long id, Long removeId) {
+    public Integer removeFriends(Integer id, Integer removeId) {
         users.get(id).getFriends().remove(removeId);
         users.get(removeId).getFriends().remove(id);
         log.warn("Пользователи удалены {} и {} из друзей.", id, removeId);
         return id;
     }
 
-    private Long generatorId() {
+    private Integer generatorId() {
         return id++;
     }
 }
