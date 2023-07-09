@@ -26,7 +26,7 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
-    public Map<Integer, Film> getUsers() {
+    public Map<Integer, Film> getALLFilms() {
         return filmStorage.getAllFilms();
     }
 
@@ -36,16 +36,16 @@ public class FilmService {
             log.error("Дата релиза — не раньше 28 декабря 1895 года.");
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года.");
         }
-
+        log.info("Обработка запроса на добавление нового фильма.");
         return filmStorage.addFilm(film);
     }
 
-    public Film updateUser(@Valid Film film) {
+    public Film updateFilm(@Valid Film film) {
         if (!filmStorage.getAllFilms().containsKey(film.getId())) {
             log.error("Фильм с заданным ID не найден.");
             throw new ElementNotFoundException("Фильма " + film.getId());
         }
-
+        log.info("Обработка запроса на обновление данных фильма.");
         return filmStorage.updateFilm(film);
     }
 

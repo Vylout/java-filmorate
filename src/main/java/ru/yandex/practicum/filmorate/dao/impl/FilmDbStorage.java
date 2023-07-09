@@ -68,23 +68,6 @@ public class FilmDbStorage implements FilmStorage {
         return filmMap;
     }
 
-    private Film makeFilm(ResultSet rs) throws SQLException {
-        int id = rs.getInt("film_id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-        Integer duration = rs.getInt("duration");
-        int mpa = rs.getInt("mpa");
-        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKES, (rs1, rowNum1) ->
-                (rs1.getInt("user_id")), id));
-        Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
-                (new Genre(rs2.getInt("genre_id"))), id));
-        if (genres.isEmpty()) {
-            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, new HashSet<>());
-        }
-        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
-    }
-
     @Override
     public Film addFilm(Film film) {
         jdbcTemplate.update(SQL_ADD_FILM, film.getName(), film.getDescription(),
@@ -99,10 +82,8 @@ public class FilmDbStorage implements FilmStorage {
                         film.getDescription(), film.getReleaseDate(), film.getDuration(),
                         film.getMpa(), new HashSet<>(), null);
             } else {
-                for (Genre genre : film.getGenres()) {
-                    jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
-                            genre.getId());
-                }
+                List<Genre> listGenre = new ArrayList<>(film.getGenres());
+                updateGenre(listGenre, filmRows);
                 return new Film(filmRows.getInt("film_id"), film.getName(),
                         film.getDescription(), film.getReleaseDate(), film.getDuration(),
                         film.getMpa(), film.getGenres());
@@ -149,5 +130,31 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Integer removeLike(Integer filmId, Integer userId) {
         return likesDao.removeLike(filmId, userId);
+    }
+
+    private Film makeFilm(ResultSet rs) throws SQLException {
+        int id = rs.getInt("film_id");
+        String name = rs.getString("name");
+        String description = rs.getString("description");
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
+        Integer duration = rs.getInt("duration");
+        int mpa = rs.getInt("mpa");
+        Set<Integer> likes = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKES, (rs1, rowNum1) ->
+                (rs1.getInt("user_id")), id));
+        Set<Genre> genres = new HashSet<>(jdbcTemplate.query(SQL_GET_GENRES, (rs2, rowNum) ->
+                (new Genre(rs2.getInt("genre_id"))), id));
+        if (genres.isEmpty()) {
+            return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, new HashSet<>());
+        }
+        return new Film(id, name, description, releaseDate, duration, new Mpa(mpa), likes, genres);
+    }
+
+    private SqlRowSet updateGenre(List<Genre> genres, SqlRowSet filmRows) {
+        List<Genre> newGenres = genres;
+        for (Genre genre : newGenres) {
+            jdbcTemplate.update(SQL_ADD_GENRE, filmRows.getInt("film_id"),
+                    genre.getId());
+        }
+        return filmRows;
     }
 }

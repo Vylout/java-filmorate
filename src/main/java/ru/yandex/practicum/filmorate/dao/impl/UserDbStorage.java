@@ -49,25 +49,6 @@ public class UserDbStorage implements UserStorage {
         return userMap;
     }
 
-    private User makeUser(ResultSet rs) throws SQLException {
-        int id = rs.getInt("user_id");
-        String email = rs.getString("email");
-        String login = rs.getString("login");
-        String name = rs.getString("name");
-        LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        HashSet<Integer> friends = new HashSet<>(jdbcTemplate.query(SQL_GET_FRIENDS,
-                (rs1, rowNum) -> (rs1.getInt("friend_id")), id));
-        HashMap<Integer, Boolean> friendStatus = new HashMap<>();
-        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(SQL_GET_FRIEND_STATUS, id);
-        if (friendsRows.next()) {
-            friendStatus.put(friendsRows.getInt("friend_id"),
-                    friendsRows.getBoolean("status"));
-        }
-        HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKED_FILMS,
-                (rs3, rowNum) -> (rs3.getInt("friend_id")), id));
-        return new User(id, email, login, name, birthday, friends, friendStatus, likedFilms);
-    }
-
     @Override
     public User addUser(User user) {
         jdbcTemplate.update(SQL_ADD_USERS, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
@@ -120,5 +101,24 @@ public class UserDbStorage implements UserStorage {
     public User getUserById(Integer id) {
         log.debug("Пользователь {} найден.", id);
         return jdbcTemplate.queryForObject(SQL_GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id);
+    }
+
+    private User makeUser(ResultSet rs) throws SQLException {
+        int id = rs.getInt("user_id");
+        String email = rs.getString("email");
+        String login = rs.getString("login");
+        String name = rs.getString("name");
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
+        HashSet<Integer> friends = new HashSet<>(jdbcTemplate.query(SQL_GET_FRIENDS,
+                (rs1, rowNum) -> (rs1.getInt("friend_id")), id));
+        HashMap<Integer, Boolean> friendStatus = new HashMap<>();
+        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(SQL_GET_FRIEND_STATUS, id);
+        if (friendsRows.next()) {
+            friendStatus.put(friendsRows.getInt("friend_id"),
+            friendsRows.getBoolean("status"));
+        }
+        HashSet<Integer> likedFilms = new HashSet<>(jdbcTemplate.query(SQL_GET_LIKED_FILMS,
+                (rs3, rowNum) -> (rs3.getInt("friend_id")), id));
+        return new User(id, email, login, name, birthday, friends, friendStatus, likedFilms);
     }
 }

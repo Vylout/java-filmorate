@@ -31,11 +31,11 @@ public class UserService {
             log.warn("Имя указано пустым. Имени было присвоено значение логина {}.", user.getLogin());
             user.setName(user.getLogin());
         }
-
+        log.info("Обработка запроса на создание нового пользователя.");
         return userStorage.addUser(user);
     }
 
-    public Map<Integer, User> getUsers() {
+    public Map<Integer, User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
@@ -49,10 +49,12 @@ public class UserService {
 
     public User updateUser(@Valid User user) {
         checkUserStorage(user.getId());
+        log.info("Обработка запроса на обновление данных пользователя.");
         return userStorage.updateUser(user);
     }
 
     public Integer removeUser(Integer postId) {
+        log.info("Обработка запроса на удаление пользователя");
         return userStorage.removeUser(postId);
     }
 
