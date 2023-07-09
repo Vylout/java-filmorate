@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -29,7 +30,8 @@ class FilmControllerTest {
 
     @BeforeEach
     public void create() {
-        film = new Film(0, "name", "description", LocalDate.of(2015, 6, 15), 100, new HashSet<>());
+        film = new Film(0, "name", "description", LocalDate.of(2015, 6, 15),
+                100, new Mpa(1), new HashSet<>(), new HashSet<>());
     }
 
     @Test

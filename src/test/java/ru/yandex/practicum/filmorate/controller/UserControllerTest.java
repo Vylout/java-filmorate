@@ -11,10 +11,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +23,8 @@ class UserControllerTest {
 
     @BeforeEach
     public void create() {
-        user = new User(0L, "email@mail.ru", "login", "name", LocalDate.of(1986, 3, 21), new HashSet<>());
+        user = new User(0, "email@mail.ru", "login", "name", LocalDate.of(1986, 3, 21),
+                new HashSet<>(), new HashMap<>(), new HashSet<>());
     }
 
     @Test

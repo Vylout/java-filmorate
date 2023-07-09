@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
@@ -21,7 +22,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -30,15 +31,15 @@ public class UserService {
             log.warn("Имя указано пустым. Имени было присвоено значение логина {}.", user.getLogin());
             user.setName(user.getLogin());
         }
-
+        log.info("Обработка запроса на создание нового пользователя.");
         return userStorage.addUser(user);
     }
 
-    public Map<Long, User> getUsers() {
+    public Map<Integer, User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(Integer id) {
         if (!userStorage.getAllUsers().containsKey(id)) {
             log.error("Не найден пользователь {}.", id);
             throw new ElementNotFoundException(String.format("Пользователь с ID " + id));
@@ -48,14 +49,16 @@ public class UserService {
 
     public User updateUser(@Valid User user) {
         checkUserStorage(user.getId());
+        log.info("Обработка запроса на обновление данных пользователя.");
         return userStorage.updateUser(user);
     }
 
-    public Long removeUser(Long postId) {
+    public Integer removeUser(Integer postId) {
+        log.info("Обработка запроса на удаление пользователя");
         return userStorage.removeUser(postId);
     }
 
-    public User addFriends(Long id, Long friendId) {
+    public User addFriends(Integer id, Integer friendId) {
         checkUserStorage(id);
         checkUserStorage(friendId);
         if (userStorage.getUserById(id).getFriends().contains(friendId)) {
@@ -64,24 +67,24 @@ public class UserService {
         return userStorage.addFriends(id, friendId);
     }
 
-    public Collection<User> getUserFriends(Long id) {
+    public Collection<User> getUserFriends(Integer id) {
         checkUserStorage(id);
         return userStorage.getUserFriends(id);
     }
 
-    public Collection<User> getMutualFriends(Long id1, Long id2) {
+    public Collection<User> getMutualFriends(Integer id1, Integer id2) {
         checkUserStorage(id1);
         checkUserStorage(id2);
         return userStorage.getMutualFriends(id1, id2);
     }
 
-    public Long removeFriends(Long id, Long removeId) {
+    public Integer removeFriends(Integer id, Integer removeId) {
         checkUserStorage(id);
         checkUserStorage(removeId);
         return userStorage.removeFriends(id, removeId);
     }
 
-    private boolean checkUserStorage(Long id) {
+    private boolean checkUserStorage(Integer id) {
         if (!userStorage.getAllUsers().containsKey(id)) {
             log.error("Пользователь с ID {} не найден.", id);
             throw new ElementNotFoundException("Пользователь с ID " + id);

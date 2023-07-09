@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
@@ -21,11 +22,11 @@ public class FilmService {
     private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
-    public Map<Integer, Film> getUsers() {
+    public Map<Integer, Film> getALLFilms() {
         return filmStorage.getAllFilms();
     }
 
@@ -35,16 +36,16 @@ public class FilmService {
             log.error("Дата релиза — не раньше 28 декабря 1895 года.");
             throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года.");
         }
-
+        log.info("Обработка запроса на добавление нового фильма.");
         return filmStorage.addFilm(film);
     }
 
-    public Film updateUser(@Valid Film film) {
+    public Film updateFilm(@Valid Film film) {
         if (!filmStorage.getAllFilms().containsKey(film.getId())) {
             log.error("Фильм с заданным ID не найден.");
             throw new ElementNotFoundException("Фильма " + film.getId());
         }
-
+        log.info("Обработка запроса на обновление данных фильма.");
         return filmStorage.updateFilm(film);
     }
 
